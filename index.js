@@ -29,9 +29,31 @@ async function run() {
     const usersCollection =
       database.collection("users");
 
+
+    app.post("/users", async (req, res) => {
+  const user = req.body;
+
+  const existingUser = await usersCollection.findOne({
+    email: user.email,
+  });
+
+  if (existingUser) {
+    return res.send({
+      message: "user already exists",
+      insertedId: null,
+    });
+  }
+
+  const result = await usersCollection.insertOne(user);
+
+  res.send(result);
+});  
+
     app.get("/", (req, res) => {
       res.send("BookCourier Server Running");
     });
+
+    
 
     app.get("/users", async (req, res) => {
       const result =
