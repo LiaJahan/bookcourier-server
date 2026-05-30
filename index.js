@@ -2,7 +2,12 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+
+const {
+  MongoClient,
+  ServerApiVersion,
+  ObjectId,
+} = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -48,12 +53,74 @@ async function run() {
 
   res.send(result);
 });  
+app.patch(
+  "/users/librarian/:id",
+  async (req, res) => {
+    const id = req.params.id;
+
+    const query = {
+      _id: new ObjectId(id),
+    };
+
+    const updateDoc = {
+      $set: {
+        role: "librarian",
+      },
+    };
+
+    const result =
+      await usersCollection.updateOne(
+        query,
+        updateDoc
+      );
+
+    res.send(result);
+  }
+);
+app.patch("/users/admin/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const query = {
+    _id: new ObjectId(id),
+  };
+
+  const updateDoc = {
+    $set: {
+      role: "admin",
+    },
+  };
+
+  const result =
+    await usersCollection.updateOne(
+      query,
+      updateDoc
+    );
+
+  res.send(result);
+});
 
     app.get("/", (req, res) => {
       res.send("BookCourier Server Running");
     });
 
     
+      app.get("/users/role/:email", async (req, res) => {
+  const email = req.params.email;
+
+  const user = await usersCollection.findOne({
+    email,
+  });
+
+  if (!user) {
+    return res.send({
+      role: null,
+    });
+  }
+
+  res.send({
+    role: user.role,
+  });
+}); 
 
     app.get("/users", async (req, res) => {
       const result =
