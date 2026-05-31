@@ -38,7 +38,8 @@ async function run() {
 
     const booksCollection =
   database.collection("books");  
-app.post("/books", async (req, res) => {
+
+  app.post("/books", async (req, res) => {
   const book = req.body;
 
   const result =
@@ -47,18 +48,6 @@ app.post("/books", async (req, res) => {
   res.send(result);
 });
 
-app.get("/books/librarian/:email", async (req, res) => {
-  const email = req.params.email;
-
-  const query = {
-    librarianEmail: email,
-  };
-
-  const result =
-    await booksCollection.find(query).toArray();
-
-  res.send(result);
-});
 
 app.post("/orders", async (req, res) => {
   const order = req.body;
@@ -86,6 +75,7 @@ app.get("/orders/:email", async (req, res) => {
   res.send(result);
 });
 
+
 app.patch(
   "/orders/cancel/:id",
   async (req, res) => {
@@ -112,8 +102,16 @@ app.patch(
   }
 );
 
+
 app.patch("/orders/pay/:id", async (req, res) => {
   const id = req.params.id;
+
+  const paymentId =
+    "PAY-" +
+    Date.now() +
+    Math.floor(
+      Math.random() * 1000
+    );
 
   const query = {
     _id: new ObjectId(id),
@@ -122,6 +120,8 @@ app.patch("/orders/pay/:id", async (req, res) => {
   const updateDoc = {
     $set: {
       paymentStatus: "paid",
+      paymentId,
+      paymentDate: new Date(),
     },
   };
 
@@ -133,6 +133,7 @@ app.patch("/orders/pay/:id", async (req, res) => {
 
   res.send(result);
 });
+
 
 app.get("/books/librarian/:email", async (req, res) => {
   const email = req.params.email;
@@ -146,6 +147,7 @@ app.get("/books/librarian/:email", async (req, res) => {
 
   res.send(result);
 });
+
 
 app.get("/books/:id", async (req, res) => {
   const id = req.params.id;
@@ -190,6 +192,7 @@ app.patch("/books/:id", async (req, res) => {
   res.send(result);
 });
 
+// another this one
 app.get("/books", async (req, res) => {
   const query = {
     status: "published",
@@ -201,13 +204,17 @@ app.get("/books", async (req, res) => {
   res.send(result);
 });
 
-app.get("/books", async (req, res) => {
-  const result =
-    await booksCollection.find().toArray();
+// one is this one ------
 
-  res.send(result);
-});
-    app.post("/users", async (req, res) => {
+// app.get("/books", async (req, res) => {
+//   const result =
+//     await booksCollection.find().toArray();
+
+//   res.send(result);
+// });
+   
+
+app.post("/users", async (req, res) => {
   const user = req.body;
 
   const existingUser = await usersCollection.findOne({
@@ -225,6 +232,7 @@ app.get("/books", async (req, res) => {
 
   res.send(result);
 });  
+
 app.patch(
   "/users/librarian/:id",
   async (req, res) => {
@@ -249,6 +257,7 @@ app.patch(
     res.send(result);
   }
 );
+
 app.patch("/users/admin/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -271,7 +280,8 @@ app.patch("/users/admin/:id", async (req, res) => {
   res.send(result);
 });
 
-    app.get("/", (req, res) => {
+
+app.get("/", (req, res) => {
       res.send("BookCourier Server Running");
     });
 
