@@ -293,6 +293,33 @@ app.delete(
   }
 );
 
+app.patch(
+  "/orders/status/:id",
+  async (req, res) => {
+    const id = req.params.id;
+
+    const { status } = req.body;
+
+    const query = {
+      _id: new ObjectId(id),
+    };
+
+    const updateDoc = {
+      $set: {
+        orderStatus: status,
+      },
+    };
+
+    const result =
+      await ordersCollection.updateOne(
+        query,
+        updateDoc
+      );
+
+    res.send(result);
+  }
+);
+
 app.get(
   "/librarian-orders/:email",
   async (req, res) => {
