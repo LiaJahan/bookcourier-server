@@ -34,7 +34,36 @@ async function run() {
     const usersCollection =
       database.collection("users");
 
+    const booksCollection =
+  database.collection("books");  
+app.post("/books", async (req, res) => {
+  const book = req.body;
 
+  const result =
+    await booksCollection.insertOne(book);
+
+  res.send(result);
+});
+
+app.get("/books/librarian/:email", async (req, res) => {
+  const email = req.params.email;
+
+  const query = {
+    librarianEmail: email,
+  };
+
+  const result =
+    await booksCollection.find(query).toArray();
+
+  res.send(result);
+});
+
+app.get("/books", async (req, res) => {
+  const result =
+    await booksCollection.find().toArray();
+
+  res.send(result);
+});
     app.post("/users", async (req, res) => {
   const user = req.body;
 
