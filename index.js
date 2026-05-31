@@ -33,6 +33,8 @@ async function run() {
 
     const usersCollection =
       database.collection("users");
+    const ordersCollection =
+  database.collection("orders");
 
     const booksCollection =
   database.collection("books");  
@@ -58,11 +60,117 @@ app.get("/books/librarian/:email", async (req, res) => {
   res.send(result);
 });
 
+app.post("/orders", async (req, res) => {
+  const order = req.body;
+
+  const result =
+    await ordersCollection.insertOne(
+      order
+    );
+
+  res.send(result);
+});
+
+app.get("/orders/:email", async (req, res) => {
+  const email = req.params.email;
+
+  const query = {
+    userEmail: email,
+  };
+
+  const result =
+    await ordersCollection
+      .find(query)
+      .toArray();
+
+  res.send(result);
+});
+
+app.patch(
+  "/orders/cancel/:id",
+  async (req, res) => {
+    const id = req.params.id;
+
+    const query = {
+      _id: new ObjectId(id),
+    };
+
+    const updateDoc = {
+      $set: {
+        orderStatus:
+          "cancelled",
+      },
+    };
+
+    const result =
+      await ordersCollection.updateOne(
+        query,
+        updateDoc
+      );
+
+    res.send(result);
+  }
+);
+
 app.get("/books/librarian/:email", async (req, res) => {
   const email = req.params.email;
 
   const query = {
     librarianEmail: email,
+  };
+
+  const result =
+    await booksCollection.find(query).toArray();
+
+  res.send(result);
+});
+
+app.get("/books/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const query = {
+    _id: new ObjectId(id),
+  };
+
+  const result =
+    await booksCollection.findOne(query);
+
+  res.send(result);
+});
+
+app.patch("/books/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const updatedBook = req.body;
+
+  const query = {
+    _id: new ObjectId(id),
+  };
+
+  const updateDoc = {
+    $set: {
+      title: updatedBook.title,
+      author: updatedBook.author,
+      category: updatedBook.category,
+      description:
+        updatedBook.description,
+      price: updatedBook.price,
+      status: updatedBook.status,
+    },
+  };
+
+  const result =
+    await booksCollection.updateOne(
+      query,
+      updateDoc
+    );
+
+  res.send(result);
+});
+
+app.get("/books", async (req, res) => {
+  const query = {
+    status: "published",
   };
 
   const result =
