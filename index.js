@@ -293,6 +293,24 @@ app.delete(
   }
 );
 
+app.get(
+  "/librarian-orders/:email",
+  async (req, res) => {
+    const email = req.params.email;
+
+    const query = {
+      librarianEmail: email,
+    };
+
+    const result =
+      await ordersCollection
+        .find(query)
+        .toArray();
+
+    res.send(result);
+  }
+);
+
 app.post("/users", async (req, res) => {
   const user = req.body;
 
