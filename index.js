@@ -58,6 +58,19 @@ app.get("/books/librarian/:email", async (req, res) => {
   res.send(result);
 });
 
+app.get("/books/librarian/:email", async (req, res) => {
+  const email = req.params.email;
+
+  const query = {
+    librarianEmail: email,
+  };
+
+  const result =
+    await booksCollection.find(query).toArray();
+
+  res.send(result);
+});
+
 app.get("/books", async (req, res) => {
   const result =
     await booksCollection.find().toArray();
