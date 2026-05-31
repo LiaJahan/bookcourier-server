@@ -214,6 +214,85 @@ app.get("/books", async (req, res) => {
 // });
    
 
+// admin getting all books
+app.get("/all-books", async (req, res) => {
+  const result =
+    await booksCollection.find().toArray();
+
+  res.send(result);
+});
+
+
+// users wishlist
+const wishlistCollection =
+  database.collection("wishlist");
+
+app.post("/wishlist", async (req, res) => {
+  const wishlistItem = req.body;
+
+  const existingItem =
+    await wishlistCollection.findOne({
+      userEmail:
+        wishlistItem.userEmail,
+      bookId:
+        wishlistItem.bookId,
+    });
+
+  if (existingItem) {
+    return res.send({
+      message:
+        "already exists",
+      insertedId: null,
+    });
+  }
+
+  const result =
+    await wishlistCollection.insertOne(
+      wishlistItem
+    );
+
+  res.send(result);
+});
+
+// get wishlist
+app.get(
+  "/wishlist/:email",
+  async (req, res) => {
+    const email =
+      req.params.email;
+
+    const query = {
+      userEmail: email,
+    };
+
+    const result =
+      await wishlistCollection
+        .find(query)
+        .toArray();
+
+    res.send(result);
+  }
+);
+
+// remove wishlist items
+app.delete(
+  "/wishlist/:id",
+  async (req, res) => {
+    const id = req.params.id;
+
+    const query = {
+      _id: new ObjectId(id),
+    };
+
+    const result =
+      await wishlistCollection.deleteOne(
+        query
+      );
+
+    res.send(result);
+  }
+);
+
 app.post("/users", async (req, res) => {
   const user = req.body;
 
