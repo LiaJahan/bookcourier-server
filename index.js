@@ -204,15 +204,7 @@ app.get("/books", async (req, res) => {
   res.send(result);
 });
 
-// one is this one ------
 
-// app.get("/books", async (req, res) => {
-//   const result =
-//     await booksCollection.find().toArray();
-
-//   res.send(result);
-// });
-   
 
 // admin getting all books
 app.get("/all-books", async (req, res) => {
